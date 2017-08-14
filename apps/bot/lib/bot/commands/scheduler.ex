@@ -6,38 +6,54 @@ defmodule Bot.Commands.Scheduler do
 
   def schedule(update) do
     {:ok, update}
-      ~>> extractText
-      ~>> extractArgs
-      ~>> executeCommand(update)
+      ~>> extract_text
+      ~>> extract_args
+      ~>> execute_command(update)
   end
 
-  defp executeCommand([time], update) do
-    schedule(String.to_integer(time), "wat", update)
+  defp execute_command(["stop"], update) do
+    Bot.UserNotifier.stop(get_chat_id())
   end
 
-  defp executeCommand([time, message], update) do
-    schedule(String.to_integer(time), message, update)
+  defp execute_command(["update", "time", time], update) do
+    Bot.UserNotifier.update_time(get_chat_id(), parse_time(time))
   end
 
-  defp schedule(time, message, update) do
-    Bot.UserNotifier.start_link(get_chat_id(), time * 1000, message)
+  defp execute_command(["update", "message", message], update) do
+    Bot.UserNotifier.update_message(get_chat_id(), message)
   end
 
-  defp executeCommand(["help"], update)  do
+  defp execute_command([time], update) do
+    schedule(parse_time(time), "wat", update)
+  end
+
+  defp execute_command([time, message], update) do
+    schedule(parse_time(time), message, update)
+  end
+
+  defp execute_command(["help"], update)  do
     send_message "halp"
   end
 
-  defp executeCommand(args, update) do
+  defp execute_command(args, update) do
     IO.inspect args
   end
 
-  defp extractArgs(text) do
+  defp parse_time(time) do
+    String.to_integer(time) * 1000
+  end
+
+  defp schedule(time, message, update) do
+    Bot.UserNotifier.start_link(get_chat_id(), time, message)
+  end
+
+  defp extract_args(text) do
     [ _ | args] = String.split(text, " ")
 
     {:ok, args}
   end
 
-  defp extractText(update) do
+  defp extract_text(update) do
     case update do
       %Nadia.Model.Update{
         message: %Nadia.Model.Message{
@@ -49,12 +65,4 @@ defmodule Bot.Commands.Scheduler do
         OK.failure :no_match  
     end
   end
-
-  defp handleCommand(command, update)
-
-  defp handleCommand([_command, "help" | _], update) do
-    {:ok, _} = send_message("Schedules a message to be send after the given time")
-    {:ok, _} = send_message("Usage: `#{command} [time] [message]")
-  end
-
 end

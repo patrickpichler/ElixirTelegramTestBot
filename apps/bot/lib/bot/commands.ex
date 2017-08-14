@@ -2,7 +2,6 @@ defmodule Bot.Commands do
   use Bot.Router
   use Bot.Commander
 
-  alias Bot.Commands.Outside
   alias Bot.Commands.Scheduler
 
   # You can create commands in the format `/command` by
@@ -21,10 +20,6 @@ defmodule Bot.Commands do
     # See also: https://hexdocs.pm/nadia/Nadia.html
     send_message "Hello World!"
   end
-
-  # You may split code to other modules using the syntax
-  # "Module, :function" instead od "do..end"
-  command "outside", do: Outside.outside(update)
 
   command "schedule", do: Scheduler.schedule(update)
 
