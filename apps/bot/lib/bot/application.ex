@@ -7,7 +7,7 @@ defmodule Bot.Application do
     children = [
       worker(Bot.Poller, []),
       worker(Bot.Matcher, []),
-      # supervisor(Registry, [:unique, :user_notifier_process_registry])
+      supervisor(Registry, [:unique, :user_notifier_process_registry])
     ]
 
     opts = [strategy: :one_for_one, name: Bot.Supervisor]

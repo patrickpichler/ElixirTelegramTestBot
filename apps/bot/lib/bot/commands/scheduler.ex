@@ -11,12 +11,24 @@ defmodule Bot.Commands.Scheduler do
       ~>> executeCommand(update)
   end
 
-  defp executeCommand(args, update) do
-    IO.inspect args
+  defp executeCommand([time], update) do
+    schedule(String.to_integer(time), "wat", update)
   end
-  
+
+  defp executeCommand([time, message], update) do
+    schedule(String.to_integer(time), message, update)
+  end
+
+  defp schedule(time, message, update) do
+    Bot.UserNotifier.start_link(get_chat_id(), time * 1000, message)
+  end
+
   defp executeCommand(["help"], update)  do
     send_message "halp"
+  end
+
+  defp executeCommand(args, update) do
+    IO.inspect args
   end
 
   defp extractArgs(text) do

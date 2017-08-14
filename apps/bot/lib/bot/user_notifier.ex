@@ -20,7 +20,6 @@ defmodule Bot.UserNotifier do
   end
 
   # Server Callbacks
-
   def handle_info(:work, {chat_id, time, message} = state) do
     Nadia.send_message(chat_id, message)
 
